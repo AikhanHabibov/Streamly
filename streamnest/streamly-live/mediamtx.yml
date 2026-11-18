@@ -1,0 +1,27 @@
+logLevel: warn
+authMethod: http
+authHTTPExclude:
+  - action: api
+api: true
+apiAddress: :9997
+rtsp: false
+rtmp: true
+rtmpAddress: :1935
+rtmpEncryption: "no"
+webrtc: false
+srt: false
+moq: false
+hls: true
+hlsAddress: :8888
+hlsVariant: mpegts
+hlsAlwaysRemux: false
+hlsSegmentDuration: 2s
+hlsSegmentCount: 7
+hlsSegmentMaxSize: 16M
+hlsMuxerCloseAfter: 20s
+pathDefaults:
+  source: publisher
+  overridePublisher: false
+  record: false
+paths:
+  "~^live_[a-f0-9]{32}$":

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Admin-Sicherheit{% endblock %}
+{% block content %}
+{% include "streamly_admin_nav.html" %}
+<div class="section-heading"><div><span class="eyebrow">PASSWORT + ZWEITER FAKTOR</span><h1 class="page-title">Deine Admin-Anmeldung.</h1><p class="muted small-copy">Vorhandene Sitzungen ohne bestätigten zweiten Faktor werden nicht akzeptiert.</p></div></div>
+{% if recovery_login %}<div class="ss-notice">Diese Sitzung wurde mit einem Wiederherstellungscode bestätigt. Der Code ist jetzt verbraucht. Prüfe deine Authenticator-App und richte bei Geräteverlust MFA im Server-Terminal neu ein.</div>{% endif %}
+<div class="stats-grid"><div class="stat-card"><span class="stat-label">Zwei-Faktor-Schutz</span><strong>Aktiv</strong><span class="stat-note">Zeitbasierter Authenticator-Code</span></div><div class="stat-card"><span class="stat-label">Unverbrauchte Wiederherstellungscodes</span><strong>{{ remaining }}</strong><span class="stat-note">Jeder Code funktioniert nur einmal.</span></div></div>
+<section class="panel"><h2>Gerätewechsel und Wiederherstellung</h2><p class="muted small-copy">Konfiguriert {{ configured_at|ago }}. Einrichtungsschlüssel und Wiederherstellungscodes werden hier nicht angezeigt. Zum Zurücksetzen brauchst du Zugriff auf das Server-Terminal und dein Admin-Passwort.</p><p class="ss-code-block"><code>python -m app.streamly_security_setup --reset</code></p><p class="muted small-copy">Ein Reset ersetzt Gerät und Codes und beendet alle Admin-Sitzungen. Sichere die Datenbank und die serverseitige MFA-Schlüsseldatei verschlüsselt. Dieses Update richtet noch keinen automatischen Backup-Dienst ein.</p></section>
+{% endblock %}

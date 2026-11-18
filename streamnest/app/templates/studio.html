@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% from "components.html" import icon, csrf_field %}
+{% block title %}Creator Studio{% endblock %}
+{% block content %}
+<div class="sa-creator-note">Neue und geänderte Videos benötigen eine Freigabe. <a href="/studio/moderation">Prüfstatus und Hinweise ansehen →</a></div>
+<div class="sl-studio-links"><a class="button secondary" href="/studio/live">Livestream Studio →</a><a class="button secondary" href="/live">Jetzt live entdecken →</a></div>
+<div class="section-heading"><div><span class="eyebrow">DEIN CREATOR-COCKPIT</span><h1 class="page-title">Hey {{ user.display_name }},<br>schön, dass du kreativ bist.</h1><p class="muted">Alles, was auf deinem Kanal passiert. An einem Ort.</p></div><a class="button" href="/upload">{{ icon('upload',18) }} Neues Video</a></div>
+<div class="stats-grid">
+{% for label, val, sym in [('Aufrufe gesamt',stats.views,'eye'),('Likes gesamt',likes,'heart'),('Abonnenten',subscribers,'sub'),('Videos insgesamt',stats.videos,'play')] %}
+<div class="stat-card"><span class="stat-label">{{ label }}{{ icon(sym,19) }}</span><strong>{{ val|compact }}</strong><span class="stat-note">Gesamter Zeitraum</span></div>
+{% endfor %}
+</div>
+<div class="section-heading"><h2>Deine Inhalte</h2><span class="muted small-copy">{{ used_mb }} / {{ quota_mb }} MB belegt</span></div>
+{% if videos %}
+<div class="table-scroll panel content-table"><table><thead><tr><th>Video</th><th>Aufrufe</th><th>Likes</th><th>Veröffentlicht</th><th>Verwalten</th></tr></thead><tbody>
+{% for v in videos %}<tr><td><a class="table-video" href="/watch/{{ v.id }}"><img src="/poster/{{ v.id }}" width="112" height="63" alt="" loading="lazy"><span><strong>{{ v.title }}</strong><small>{{ v.category }} · {{ v.duration|duration }}</small></span></a></td><td>{{ v.views|compact }}</td><td>{{ v.likes|compact }}</td><td>{{ v.created_at|ago }}</td><td><div class="table-actions"><a href="/studio/{{ v.id }}/edit" class="icon-button" aria-label="Video bearbeiten">{{ icon('edit',18) }}</a><form method="post" action="/studio/{{ v.id }}/delete" data-confirm="Video und zugehörige Kommentare dauerhaft löschen?">{{ csrf_field(csrf) }}<button type="submit" class="icon-button danger" aria-label="Video löschen">{{ icon('trash',18) }}</button></form></div></td></tr>{% endfor %}
+</tbody></table></div>
+{% else %}<div class="empty-state">{{ icon('upload',38) }}<h3>Dein Kanal ist bereit. Bist du es auch?</h3><p>Lade dein erstes Video hoch und lass deine Community wachsen.</p><a href="/upload" class="button">Erstes Video hochladen {{ icon('arrow',17) }}</a></div>{% endif %}
+{% endblock %}

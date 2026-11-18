@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Änderungsprotokoll{% endblock %}
+{% block content %}
+{% include "streamly_admin_nav.html" %}
+<div class="section-heading"><div><h1 class="page-title">Nachvollziehbare Entscheidungen.</h1><p class="muted small-copy">Ein Protokoll der Admin-Aktionen. Keine Passwörter oder Sitzungstokens werden hier gespeichert.</p></div></div>
+<div class="table-scroll panel content-table"><table><thead><tr><th>Zeitpunkt</th><th>Admin</th><th>Aktion</th><th>Ziel</th><th>Details</th></tr></thead><tbody>
+{% for e in events %}<tr><td>{{ e.created_at|ago }}</td><td>{{ e.actor }}</td><td>{{ e.action }}</td><td class="sa-break">{{ e.target }}</td><td class="sa-break">{{ e.details }}</td></tr>{% else %}<tr><td colspan="5">Noch keine Einträge.</td></tr>{% endfor %}
+</tbody></table></div>
+{% if page>1 or more %}<nav class="pagination">{% if page>1 %}<a href="/admin/audit?page={{ page-1 }}">← Zurück</a>{% endif %}<span class="muted">Seite {{ page }}</span>{% if more %}<a href="/admin/audit?page={{ page+1 }}">Weiter →</a>{% endif %}</nav>{% endif %}
+{% endblock %}

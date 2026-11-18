@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% from "components.html" import icon, csrf_field %}
+{% block title %}{{ 'Registrieren' if mode=='register' else 'Anmelden' }}{% endblock %}
+{% block content %}
+<div class="auth-layout">
+<section class="auth-story"><span class="eyebrow">DEIN NÄCHSTES KAPITEL</span><h1>Nicht nur<br>zuschauen.<br><span>Mitgestalten.</span></h1><p>Ein Ort für deine Ideen, deine Lieblings-Creator und alles, was dich begeistert.</p><div class="auth-benefit">{{ icon('check') }} Ein eigener Creator-Kanal</div><div class="auth-benefit">{{ icon('check') }} Videos teilen, die etwas bewegen</div><div class="auth-benefit">{{ icon('check') }} Mit deiner Community wachsen</div><div class="story-decoration" aria-hidden="true">{{ icon('play',80) }}</div></section>
+<section class="panel auth-panel">
+<span class="eyebrow">WILLKOMMEN BEI STREAMLY</span>
+<h2>{{ 'Deine Bühne wartet.' if mode=='register' else 'Schön, dass du da bist.' }}</h2>
+<p class="muted">{{ 'Erstelle dein Konto und leg direkt los.' if mode=='register' else 'Melde dich an und entdecke Neues.' }}</p>
+<form method="post" action="/{{ mode }}" class="form-stack">
+{{ csrf_field(csrf) }}
+{% if mode=='register' %}
+<label>Anzeigename<input required name="display_name" autocomplete="nickname" minlength="2" maxlength="60" placeholder="So sieht dich deine Community"></label>
+<label>Benutzername<input required name="username" autocomplete="username" pattern="[a-zA-Z0-9_]{3,30}" minlength="3" maxlength="30" placeholder="dein_kanal"><small>3–30 Zeichen: a–z, Zahlen und Unterstriche.</small></label>
+<label>E-Mail-Adresse<input required name="email" type="email" autocomplete="email" maxlength="254" placeholder="du@beispiel.ch"></label>
+{% else %}
+<label>Benutzername oder E-Mail<input required name="username" autocomplete="username" maxlength="254" autofocus placeholder="Dein Konto"></label>
+{% endif %}
+<label>Passwort<input required name="password" type="password" autocomplete="{{ 'new-password' if mode=='register' else 'current-password' }}" minlength="{{ 12 if mode=='register' else 1 }}" maxlength="128" placeholder="{{ 'Mindestens 12 Zeichen' if mode=='register' else 'Dein Passwort' }}"></label>
+<button class="button full-width" type="submit">{{ 'Konto erstellen' if mode=='register' else 'Anmelden' }} {{ icon('arrow',18) }}</button>
+</form>
+<p class="auth-switch">{% if mode=='register' %}Schon dabei? <a href="/login">Jetzt anmelden</a>{% else %}Noch kein Konto? <a href="/register">Kostenlos registrieren</a>{% endif %}</p>
+</section>
+</div>
+{% endblock %}

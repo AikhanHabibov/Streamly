@@ -1,0 +1,47 @@
+services:
+  web:
+    build: .
+    restart: unless-stopped
+    environment:
+      APP_ENV: production
+      PUBLIC_URL: https://${DOMAIN:?Setze DOMAIN in der .env-Datei}
+      MAX_VIDEO_MB: ${MAX_VIDEO_MB:-250}
+      USER_QUOTA_MB: ${USER_QUOTA_MB:-2048}
+      DATA_DIR: /data
+    volumes:
+      - streamnest_data:/data
+    expose:
+      - "8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen(urllib.request.Request('http://127.0.0.1:8000/health', headers={'Host': '${DOMAIN}'}), timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    mem_limit: 2g
+    cpus: 2
+    pids_limit: 160
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      web:
+        condition: service_healthy
+    environment:
+      DOMAIN: ${DOMAIN:?Setze DOMAIN}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+volumes:
+  streamnest_data:
+  caddy_data:
+  caddy_config:

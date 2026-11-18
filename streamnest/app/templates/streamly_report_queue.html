@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Meldungen verwalten{% endblock %}
+{% block content %}
+{% include "streamly_admin_nav.html" %}
+<div class="section-heading"><div><span class="eyebrow">MODERATIONSFÄLLE</span><h1 class="page-title">Hinsehen statt automatisch sperren.</h1><p class="muted small-copy">Eine Meldung ist ein Hinweis, kein Beweis. Inhalt und Kontext vor einer Massnahme prüfen.</p></div></div>
+<nav class="chips">{% for value,label in [('open','Offen'),('reviewing','In Prüfung'),('resolved','Bearbeitet'),('dismissed','Ohne Massnahme'),('all','Alle')] %}<a class="chip {{ 'selected' if status==value else '' }}" href="/admin/reports?status={{ value }}">{{ label }}</a>{% endfor %}</nav>
+<div class="table-scroll panel content-table"><table><thead><tr><th>Inhalt</th><th>Grund / gemeldet von</th><th>Status</th><th>Aktion</th></tr></thead><tbody>
+{% for r in reports %}<tr><td><strong>{{ r.target_title }}</strong><br><small>@{{ r.owner_name }} · {{ r.target_type }}</small></td><td>{{ r.category }}<br><small>{{ '@' ~ r.reporter if r.reporter else 'Gelöschtes Konto' }} · {{ r.created_at|ago }}</small></td><td>{{ {'open':'Offen','reviewing':'In Prüfung','resolved':'Bearbeitet','dismissed':'Ohne Massnahme'}[r.status] }}</td><td><a class="button secondary compact" href="/admin/reports/{{ r.id }}">Prüfen</a></td></tr>{% else %}<tr><td colspan="4">Keine Meldungen in dieser Ansicht.</td></tr>{% endfor %}
+</tbody></table></div>
+{% if page>1 or more %}<nav class="pagination">{% if page>1 %}<a href="/admin/reports?status={{ status }}&page={{ page-1 }}">← Zurück</a>{% endif %}<span class="muted">Seite {{ page }}</span>{% if more %}<a href="/admin/reports?status={{ status }}&page={{ page+1 }}">Weiter →</a>{% endif %}</nav>{% endif %}
+{% endblock %}

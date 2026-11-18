@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% from "components.html" import csrf_field, icon %}
+{% block title %}Inhalt melden{% endblock %}
+{% block content %}
+<div class="section-heading"><div><span class="eyebrow">HILF UNS BEI DER MODERATION</span><h1 class="page-title">Inhalt melden.</h1><p class="muted small-copy">Deine Meldung geht an den Admin. Sie führt nicht automatisch zu einer Löschung.</p></div></div>
+<div class="settings-layout">
+<section class="panel"><span class="eyebrow">{{ {'video':'VIDEO','comment':'KOMMENTAR','live':'LIVESTREAM'}[target.kind] }}</span><h2>{{ target.title }}</h2><p class="muted small-copy">@{{ target.owner_name }}</p>{% if target.snapshot %}<p class="preserve-lines ss-snapshot">{{ target.snapshot }}</p>{% endif %}</section>
+<form class="panel form-stack" method="post" action="/report/{{ target.kind }}/{{ target.id }}">{{ csrf_field(csrf) }}<input type="hidden" name="version" value="{{ target.version }}">
+<label>Was ist das Problem?<select name="category" required>{% for c in report_categories %}<option>{{ c }}</option>{% endfor %}</select></label>
+<label>Beschreibe den Vorfall<textarea name="reason" rows="7" required minlength="10" maxlength="2000" placeholder="Was soll der Admin prüfen? Bei Livestreams möglichst den Zeitpunkt nennen."></textarea></label>
+<p class="muted small-copy">Mindestens 10 Zeichen. Keine Passwörter oder unnötigen privaten Daten übermitteln. Andere normale Nutzer sehen deinen Namen als meldende Person nicht.</p>
+<button type="submit" class="button">Meldung absenden {{ icon('arrow',17) }}</button></form>
+</div>
+{% endblock %}

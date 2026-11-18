@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% from "components.html" import icon, csrf_field %}
+{% block title %}Video bearbeiten{% endblock %}
+{% block content %}
+<div class="section-heading"><div><span class="eyebrow">CREATOR STUDIO</span><h1 class="page-title">Der letzte Feinschliff.</h1></div><a href="/studio" class="button secondary">Zurück zum Studio</a></div>
+<form class="panel form-stack narrow-panel" method="post" action="/studio/{{ video.id }}/edit">{{ csrf_field(csrf) }}
+<label>Titel<input name="title" value="{{ video.title }}" required minlength="3" maxlength="140"></label>
+<label>Beschreibung<textarea name="description" rows="8" maxlength="5000">{{ video.description }}</textarea></label>
+<label>Kategorie<select name="category">{% for c in categories %}<option {{ 'selected' if video.category==c else '' }}>{{ c }}</option>{% endfor %}</select></label>
+<button class="button" type="submit">Änderungen speichern {{ icon('check',18) }}</button>
+</form>
+{% endblock %}

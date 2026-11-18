@@ -1,0 +1,11 @@
+{$DOMAIN} {
+    request_body {
+        max_size 270MB
+    }
+    encode zstd gzip
+    reverse_proxy web:8000 {
+        transport http {
+            response_header_timeout 300s
+        }
+    }
+}

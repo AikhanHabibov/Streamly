@@ -1,0 +1,50 @@
+{% macro icon(name, size=20) -%}
+<svg width="{{ size }}" height="{{ size }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+{% if name == 'play' %}<path d="m9 5 11 7-11 7z"/>
+{% elif name == 'home' %}<path d="m3 10 9-7 9 7v10H3zM9 20v-7h6v7"/>
+{% elif name == 'search' %}<circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/>
+{% elif name == 'upload' %}<path d="M12 16V3m-5 5 5-5 5 5M4 15v6h16v-6"/>
+{% elif name == 'heart' %}<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/>
+{% elif name == 'sub' %}<rect x="3" y="7" width="18" height="14" rx="2"/><path d="M7 3h10M5 5h14m-4 9-5-3v6z"/>
+{% elif name == 'chart' %}<path d="M4 3v18h17M8 16v-4m5 4V6m5 10V9"/>
+{% elif name == 'user' %}<circle cx="12" cy="7" r="4"/><path d="M4 21v-3a8 8 0 0 1 16 0v3"/>
+{% elif name == 'settings' %}<circle cx="12" cy="12" r="4"/><path d="m10 2 4 0 1 3 3 1 3 3-1 3 1 3-3 3-3 1-1 3h-4l-1-3-3-1-3-3 1-3-1-3 3-3 3-1z"/>
+{% elif name == 'arrow' %}<path d="M4 12h16m-6-6 6 6-6 6"/>
+{% elif name == 'eye' %}<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>
+{% elif name == 'share' %}<path d="M12 15V2m-5 5 5-5 5 5M5 11v10h14V11"/>
+{% elif name == 'check' %}<path d="m5 12 4 4L20 5"/>
+{% elif name == 'menu' %}<path d="M3 6h18M3 12h18M3 18h18"/>
+{% elif name == 'logout' %}<path d="M9 3H3v18h6m6-15 6 6-6 6m-8-6h14"/>
+{% elif name == 'spark' %}<path d="m12 2 3 7 7 3-7 3-3 7-3-7-7-3 7-3z"/>
+{% elif name == 'comment' %}<path d="M21 15a3 3 0 0 1-3 3H8l-5 4V6a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3z"/>
+{% elif name == 'edit' %}<path d="m15 3 6 6-12 12H3v-6zM12 6l6 6"/>
+{% elif name == 'trash' %}<path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7"/>
+{% else %}<circle cx="12" cy="12" r="9"/><path d="M12 8v5m0 3h.01"/>
+{% endif %}
+</svg>
+{%- endmacro %}
+{% macro csrf_field(csrf) %}<input type="hidden" name="csrf" value="{{ csrf }}">{% endmacro %}
+{% macro card(v) %}
+<article class="video-card">
+  <a href="/watch/{{ v.id }}" class="thumbnail tone-{{ v.category|lower }}" aria-label="{{ v.title }}">
+    {% if v.poster %}<img src="/poster/{{ v.id }}" alt="" loading="lazy" width="640" height="360">{% else %}<span class="placeholder-art">{{ icon('play',48) }}</span>{% endif %}
+    <span class="video-duration">{{ v.duration|duration }}</span>
+    <span class="hover-play">{{ icon('play',24) }}</span>
+  </a>
+  <div class="video-info">
+    <a class="avatar small" href="/channel/{{ v.username }}" aria-label="Kanal {{ v.display_name }}">{{ v.display_name[:1]|upper }}</a>
+    <div class="video-copy">
+      <a class="video-title" href="/watch/{{ v.id }}">{{ v.title }}</a>
+      <a class="muted creator-name" href="/channel/{{ v.username }}">{{ v.display_name }}</a>
+      <p class="video-meta">{{ v.views|compact }} Aufrufe <span>·</span> {{ v.created_at|ago }}</p>
+    </div>
+  </div>
+</article>
+{% endmacro %}
+{% macro pagination(page,more,paging) %}
+{% if page > 1 or more %}<nav class="pagination" aria-label="Seitennavigation">
+{% if page > 1 %}<a class="button secondary" href="{{ paging }}{{ page-1 }}">← Zurück</a>{% endif %}
+<span class="muted">Seite {{ page }}</span>
+{% if more %}<a class="button secondary" href="{{ paging }}{{ page+1 }}">Weiter →</a>{% endif %}
+</nav>{% endif %}
+{% endmacro %}

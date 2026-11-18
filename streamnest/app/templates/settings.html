@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% from "components.html" import icon, csrf_field %}
+{% block title %}Einstellungen{% endblock %}
+{% block content %}
+<div class="section-heading"><div><span class="eyebrow">DEIN KONTO</span><h1 class="page-title">Mach deinen Kanal zu deinem.</h1><p class="muted">Deine Community möchte wissen, wer hinter den Videos steckt.</p></div></div>
+<div class="settings-layout">
+<section class="panel"><h2>Öffentliches Profil</h2><form method="post" action="/settings" class="form-stack">{{ csrf_field(csrf) }}<div class="profile-preview"><span class="avatar large">{{ user.display_name[:1]|upper }}</span><div><strong>@{{ user.username }}</strong><p class="muted small-copy">Dein persönlicher Creator-Kanal</p></div></div>
+<label>Anzeigename<input name="display_name" value="{{ user.display_name }}" required minlength="2" maxlength="60"></label>
+<label>Über dich<textarea name="bio" rows="6" maxlength="1500" placeholder="Was begeistert dich? Worum geht es auf deinem Kanal?">{{ user.bio }}</textarea></label>
+<button class="button" type="submit">Profil speichern {{ icon('check',17) }}</button></form></section>
+<section class="panel"><h2>Sicherheit</h2>{% if request.query_params.get('saved') %}<p class="success-note">Dein Passwort wurde aktualisiert. Andere Sitzungen wurden beendet.</p>{% endif %}<p class="muted small-copy">Ein neues Passwort beendet alle anderen Anmeldesitzungen.</p><form method="post" action="/settings/password" class="form-stack">{{ csrf_field(csrf) }}
+<label>Aktuelles Passwort<input name="old_password" type="password" autocomplete="current-password" required maxlength="128"></label>
+<label>Neues Passwort<input name="password" type="password" autocomplete="new-password" required minlength="12" maxlength="128" placeholder="Mindestens 12 Zeichen"></label>
+<button class="button secondary" type="submit">Passwort ändern</button></form><div class="account-info"><strong>Kontodaten</strong><p class="muted small-copy">{{ user.email }}<br>Benutzername: @{{ user.username }}</p></div></section>
+</div>
+<section class="panel delete-account-panel"><h2>Konto dauerhaft löschen</h2><p class="muted small-copy">Dein Profil, deine Videos, Kommentare, Likes und Abonnements werden aus dem aktiven System gelöscht. Kopierte öffentliche Inhalte und bereits erstellte Backups werden dadurch nicht automatisch entfernt.</p><form method="post" action="/settings/delete-account" class="form-stack" data-confirm="Dein Konto und alle deine Videos dauerhaft löschen? Dies kann nicht rückgängig gemacht werden.">{{ csrf_field(csrf) }}<label>Mit deinem aktuellen Passwort bestätigen<input type="password" name="password" autocomplete="current-password" required maxlength="128"></label><button class="button secondary danger" type="submit">{{ icon('trash',17) }} Konto endgültig löschen</button></form></section>
+{% endblock %}

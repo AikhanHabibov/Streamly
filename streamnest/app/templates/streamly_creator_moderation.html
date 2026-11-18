@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Prüfstatus meiner Videos{% endblock %}
+{% block content %}
+<div class="section-heading"><div><span class="eyebrow">STREAMLY CREATOR</span><h1 class="page-title">Der Prüfstatus deiner Videos.</h1><p class="muted small-copy">Neue Uploads und Änderungen werden erst nach Freigabe öffentlich. Hier erscheinen die neuesten 200 Videos.</p></div><a href="/studio" class="button secondary">Zum Studio</a></div>
+<div class="table-scroll panel content-table"><table><thead><tr><th>Video</th><th>Status</th><th>Hinweis</th></tr></thead><tbody>
+{% for v in videos %}<tr><td><a href="/watch/{{ v.id }}">{{ v.title }}</a></td><td><span class="sa-status sa-{{ v.state }}">{{ {'pending':'Prüfung offen','approved':'Freigegeben','rejected':'Abgelehnt'}[v.state] }}</span></td><td class="preserve-lines sa-break">{{ v.reason or '—' }}</td></tr>{% else %}<tr><td colspan="3">Noch keine Videos vorhanden.</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}

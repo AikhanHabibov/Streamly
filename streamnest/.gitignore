@@ -1,0 +1,14 @@
+.env
+.venv/
+data/
+__pycache__/
+.pytest_cache/
+*.pyc
+*.zip
+
+streamly-update-backups/
+app-before-streamly/
+
+streamly-admin-backups/
+
+streamly-security-backups/

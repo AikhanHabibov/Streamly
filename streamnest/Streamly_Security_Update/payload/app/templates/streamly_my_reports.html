@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Meine Meldungen{% endblock %}
+{% block content %}
+<div class="section-heading"><div><span class="eyebrow">DEINE RÜCKMELDUNGEN</span><h1 class="page-title">Meine Meldungen.</h1><p class="muted small-copy">Die neuesten 50 Meldungen deines Kontos. Interne Admin-Notizen werden hier nicht veröffentlicht.</p></div></div>
+{% if request.query_params.get('sent') %}<div class="ss-notice" role="status">Danke. Der Admin kann deine Meldung jetzt prüfen.</div>{% endif %}
+{% if request.query_params.get('duplicate') %}<div class="ss-notice" role="status">Für diesen Inhalt hast du bereits eine offene Meldung. Es wurde kein Duplikat erstellt.</div>{% endif %}
+<div class="table-scroll panel content-table"><table><thead><tr><th>Inhalt</th><th>Grund</th><th>Status</th><th>Zeitpunkt</th></tr></thead><tbody>
+{% for r in reports %}<tr><td>{{ r.target_title }}</td><td>{{ r.category }}</td><td><span class="ss-status">{{ {'open':'Offen','reviewing':'In Prüfung','resolved':'Bearbeitet','dismissed':'Geschlossen ohne Massnahme'}[r.status] }}</span></td><td>{{ r.created_at|ago }}</td></tr>{% else %}<tr><td colspan="4">Du hast noch keine Inhalte gemeldet.</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}

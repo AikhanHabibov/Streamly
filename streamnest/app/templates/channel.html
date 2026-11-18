@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% from "components.html" import icon, card, csrf_field, pagination %}
+{% block title %}{{ creator.display_name }}{% endblock %}
+{% block content %}
+<div class="channel-cover"><div class="cover-circle"></div><span>CREATE. CONNECT. INSPIRE.</span>{{ icon('play',100) }}</div>
+<section class="channel-header">
+  <div class="avatar channel-avatar">{{ creator.display_name[:1]|upper }}</div>
+  <div class="channel-details"><span class="eyebrow">CREATOR-KANAL</span><h1>{{ creator.display_name }}</h1><p class="muted">@{{ creator.username }} <span>·</span> {{ creator.subscribers|compact }} Abonnenten <span>·</span> {{ creator.views|compact }} Aufrufe</p></div>
+  {% if user and user.id == creator.id %}<a class="button secondary" href="/settings">{{ icon('edit',17) }} Kanal bearbeiten</a>
+  {% elif user %}<form action="/channel/{{ creator.username }}/subscribe" method="post">{{ csrf_field(csrf) }}<button class="button {{ 'secondary' if subscribed else '' }}" type="submit">{{ icon('check' if subscribed else 'sub',18) }} {{ 'Abonniert' if subscribed else 'Abonnieren' }}</button></form>
+  {% else %}<a class="button" href="/login">{{ icon('sub',18) }} Abonnieren</a>{% endif %}
+</section>
+{% if creator.bio %}<p class="channel-bio preserve-lines">{{ creator.bio }}</p>{% endif %}
+<div class="tab-bar"><span class="tab active">Videos</span><span class="muted">Die neuesten Geschichten von {{ creator.display_name }}</span></div>
+{% if videos %}<div class="video-grid">{% for v in videos %}{{ card(v) }}{% endfor %}</div>
+{% else %}<div class="empty-state">{{ icon('play',40) }}<h3>Noch keine Videos</h3><p>Hier entstehen bald neue Geschichten.</p></div>{% endif %}
+{{ pagination(page,more,paging) }}
+{% endblock %}

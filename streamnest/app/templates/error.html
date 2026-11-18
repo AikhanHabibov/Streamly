@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% from "components.html" import icon %}
+{% block title %}{{ status }}{% endblock %}
+{% block content %}
+<section class="error-page"><span class="error-number">{{ status }}</span><h1>{{ 'Hier ist noch keine Bühne.' if status==404 else 'Das hat leider nicht geklappt.' }}</h1><p class="muted">{{ detail }}</p><div class="hero-buttons"><a href="/" class="button">Zur Startseite {{ icon('arrow',18) }}</a>{% if status==401 %}<a href="/login" class="button secondary">Anmelden</a>{% else %}<button type="button" class="button secondary" data-back>Zurück</button>{% endif %}</div></section>
+{% endblock %}

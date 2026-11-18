@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% from "components.html" import csrf_field %}
+{% block title %}Benutzer verwalten{% endblock %}
+{% block content %}
+{% include "streamly_admin_nav.html" %}
+<div class="section-heading"><div><h1 class="page-title">Benutzer und Livestream-Rechte.</h1><p class="muted small-copy">Sperren beenden bestehende Benutzer-Sitzungen und deaktivieren den Stream-Schlüssel.</p></div><form method="get" action="/admin/users" class="sa-search"><input name="q" value="{{ q }}" maxlength="100" placeholder="Benutzer suchen" aria-label="Benutzer suchen"><button class="button secondary compact">Suchen</button></form></div>
+<div class="sa-user-grid">
+{% for a in accounts %}<article class="panel sa-user-card"><div class="profile-preview"><span class="avatar">{{ a.display_name[:1]|upper }}</span><div><h2>{{ a.display_name }}</h2><p class="muted small-copy">@{{ a.username }} · {{ a.video_count }} Videos</p></div></div>
+<div class="sa-user-badges"><span class="sa-status {{ 'sa-rejected' if a.blocked else 'sa-approved' }}">{{ 'Gesperrt' if a.blocked else 'Aktiv' }}</span><span class="sa-status {{ 'sa-approved' if a.can_stream and not a.blocked else 'sa-pending' }}">{{ 'Streaming erlaubt' if a.can_stream and not a.blocked else 'Streaming gesperrt' }}</span></div>
+{% if a.reason %}<p class="sa-error preserve-lines">{{ a.reason }}</p>{% endif %}
+<form method="post" action="/admin/users/{{ a.id }}/update" class="form-stack sa-gap">{{ csrf_field(csrf) }}<input type="hidden" name="action" value="rename"><label>Öffentlicher Anzeigename<input name="display_name" value="{{ a.display_name }}" required minlength="2" maxlength="60"></label><button class="button secondary compact" type="submit">Anzeigename ändern</button></form>
+<form method="post" action="/admin/users/{{ a.id }}/update" class="form-stack sa-gap">{{ csrf_field(csrf) }}<label>Grund für eine Kontosperre<textarea name="reason" rows="2" maxlength="1000" placeholder="Bei Sperrung erforderlich"></textarea></label><div class="sa-buttons">
+{% if a.blocked %}<button class="button secondary compact" name="action" value="unblock" type="submit">Entsperren</button>{% else %}<button class="button secondary compact danger" name="action" value="block" type="submit">Konto sperren</button>{% endif %}
+{% if not a.blocked %}<button class="button secondary compact" name="action" value="{{ 'deny_live' if a.can_stream else 'allow_live' }}" type="submit">{{ 'Streaming entziehen' if a.can_stream else 'Streaming erlauben' }}</button>{% endif %}
+</div></form></article>
+{% else %}<p class="muted">Keine Konten gefunden.</p>{% endfor %}
+</div>
+{% if page>1 or more %}<nav class="pagination">{% if page>1 %}<a href="/admin/users?q={{ q|urlencode }}&page={{ page-1 }}">← Zurück</a>{% endif %}<span class="muted">Seite {{ page }}</span>{% if more %}<a href="/admin/users?q={{ q|urlencode }}&page={{ page+1 }}">Weiter →</a>{% endif %}</nav>{% endif %}
+{% endblock %}

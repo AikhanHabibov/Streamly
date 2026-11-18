@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% from "components.html" import icon %}
+{% block title %}Jetzt live{% endblock %}
+{% block content %}
+<div class="section-heading"><div><span class="eyebrow">STREAMLY LIVE</span><h1 class="page-title">Nicht später. Mittendrin.</h1><p class="muted">Entdecke Creator, die gerade wirklich senden.</p></div><a href="{{ '/studio/live' if user else '/login' }}" class="button">{{ icon('play',18) }} Selbst live gehen</a></div>
+{% if not media_available %}<div class="sl-notice">Der Streaming-Dienst ist gerade nicht erreichbar. Prüfe, ob du mit <code>compose.live.yaml</code> gestartet hast.</div>{% endif %}
+{% if live_channels %}
+<div class="video-grid">
+{% for c in live_channels %}
+<article class="video-card"><a href="/live/{{ c.username }}" class="thumbnail sl-live-art"><span class="sl-live-badge">LIVE</span><span class="sl-broadcast-icon">{{ icon('play',48) }}</span><span class="sl-art-name">{{ c.display_name }}</span></a><div class="video-info"><a class="avatar small" href="/channel/{{ c.username }}">{{ c.display_name[:1]|upper }}</a><div class="video-copy"><a href="/live/{{ c.username }}" class="video-title">{{ c.title }}</a><a class="creator-name muted" href="/channel/{{ c.username }}">{{ c.display_name }}</a><p class="video-meta">{{ c.category }} · Liveübertragung</p></div></div></article>
+{% endfor %}
+</div>
+{% else %}<div class="empty-state">{{ icon('play',40) }}<h3>Gerade ist es ruhig.</h3><p>Sobald ein Creator mit OBS sendet, erscheint der Stream hier. Es werden keine Offline-Kanäle als «live» angezeigt.</p><a href="/live" class="button secondary">Aktualisieren</a></div>{% endif %}
+{% endblock %}

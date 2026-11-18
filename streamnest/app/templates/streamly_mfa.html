@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% from "components.html" import csrf_field, icon %}
+{% block title %}Admin bestätigen{% endblock %}
+{% block content %}
+<section class="panel ss-login"><span class="eyebrow">STREAMLY · ZWEITER FAKTOR</span><h1>Noch ein Sicherheitscheck.</h1><p class="muted small-copy">Dein Passwort wurde bestätigt. Gib jetzt den aktuellen Code deiner Authenticator-App ein. Erst danach erhältst du Admin-Rechte.</p>
+{% if error %}<p class="ss-error" role="alert">{{ error }}</p>{% endif %}
+<form method="post" action="/admin/mfa" class="form-stack">{{ csrf_field(csrf) }}
+<label>App-Code oder einmaliger Wiederherstellungscode<input name="code" type="text" required minlength="6" maxlength="64" autocomplete="one-time-code" autocapitalize="off" spellcheck="false" autofocus placeholder="6 Ziffern oder Wiederherstellungscode"></label>
+<button type="submit" class="button">Anmeldung abschliessen {{ icon('check',17) }}</button></form>
+<p class="muted small-copy ss-gap">Ein App-Code kann nicht zweimal verwendet werden. Warte nach einer erfolgreichen Einrichtung oder Anmeldung auf den nächsten Code. Die Passwortbestätigung läuft nach fünf Minuten ab.</p>
+<a href="/admin/login" class="button secondary compact ss-gap">Neu mit Passwort anmelden</a>
+</section>
+{% endblock %}

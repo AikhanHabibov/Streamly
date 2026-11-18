@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% from "components.html" import icon %}
+{% block title %}{{ live_channel.title }} · Live{% endblock %}
+{% block content %}
+<div class="sl-live-layout">
+<section class="watch-primary">
+<div class="sl-live-top"><a href="/live">← Alle Livestreams</a><span class="sl-status {{ 'online' if online else '' }}" id="sl-live-status">{{ 'LIVE' if online else 'OFFLINE' }}</span></div>
+<div class="player-shell sl-live-shell">
+<video id="sl-live-player" controls playsinline muted autoplay data-username="{{ live_channel.username }}" data-source="/hls/{{ live_channel.path }}/index.m3u8" data-online="{{ 'true' if online else 'false' }}"></video>
+<div class="sl-offline" id="sl-offline" {{ 'hidden' if online else '' }}>{{ icon('play',48) }}<h2>Der Stream ist gerade offline.</h2><p>Diese Seite prüft automatisch, ob die Übertragung beginnt.</p></div>
+</div>
+<p class="sl-player-message muted small-copy" id="sl-player-message" role="status">{{ '' if media_available else 'Der Streaming-Dienst ist derzeit nicht erreichbar.' }}</p>
+<div class="watch-category"><span>{{ live_channel.category }}</span><span>·</span><span>Liveübertragung</span></div>
+<h1 class="watch-title">{{ live_channel.title }}</h1>
+<div class="watch-creator"><a class="avatar" href="/channel/{{ live_channel.username }}">{{ live_channel.display_name[:1]|upper }}</a><a href="/channel/{{ live_channel.username }}" class="creator-copy"><strong>{{ live_channel.display_name }}</strong><span>@{{ live_channel.username }}</span></a><button type="button" class="button secondary" data-share="{{ request.url }}">{{ icon('share',17) }} Teilen</button></div>
+{% if live_channel.description %}<div class="description-panel"><p class="preserve-lines">{{ live_channel.description }}</p></div>{% endif %}
+</section>
+<aside class="panel sl-live-info"><span class="eyebrow">LIVE BEI STREAMLY</span><h2>Dabei statt nur danach.</h2><p>Hier läuft die tatsächliche Übertragung des Creators. Lautstärke kannst du im Player einschalten.</p><a class="button secondary" href="/channel/{{ live_channel.username }}">Zum Creator-Kanal {{ icon('arrow',17) }}</a><div class="sl-notice">Livechat, automatische Aufzeichnungen und mehrere Qualitätsstufen sind in diesem Update noch nicht enthalten.</div></aside>
+</div>
+<script defer src="/static/vendor/hls.min.js"></script>
+<script defer src="/static/streamly_live.js"></script>
+{% endblock %}

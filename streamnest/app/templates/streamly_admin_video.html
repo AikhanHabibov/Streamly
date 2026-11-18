@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% from "components.html" import icon, csrf_field %}
+{% block title %}Video prüfen{% endblock %}
+{% block content %}
+{% include "streamly_admin_nav.html" %}
+<div class="section-heading"><div><span class="eyebrow">@{{ video.username }}</span><h1 class="page-title">Video prüfen und verwalten.</h1></div><span class="sa-status sa-{{ video.state }}">{{ {'pending':'Prüfung offen','approved':'Freigegeben','rejected':'Abgelehnt'}[video.state] }}</span></div>
+<div class="settings-layout">
+<section class="panel"><div class="player-shell"><video controls playsinline preload="metadata" src="/media/{{ video.id }}" poster="/poster/{{ video.id }}"></video></div>
+<form class="form-stack sa-gap" method="post" action="/admin/videos/{{ video.id }}/edit">{{ csrf_field(csrf) }}
+<label>Videotitel<input name="title" value="{{ video.title }}" required minlength="3" maxlength="140"></label>
+<label>Beschreibung<textarea name="description" rows="6" maxlength="5000">{{ video.description }}</textarea></label>
+<label>Kategorie<select name="category">{% for c in categories %}<option {{ 'selected' if video.category==c else '' }}>{{ c }}</option>{% endfor %}</select></label><button class="button secondary" type="submit">Änderungen speichern</button>
+<p class="muted small-copy">Geänderte Metadaten setzen den Prüfstatus zurück. Danach bei Bedarf erneut freigeben.</p>
+</form></section>
+<section class="panel"><h2>Deine Entscheidung</h2><p class="muted small-copy">Prüfe Bild, Ton, Titel und Beschreibung. Die technische Dateiprüfung erkennt nicht automatisch problematische Inhalte.</p>
+<form class="form-stack sa-gap" method="post" action="/admin/videos/{{ video.id }}/moderate">{{ csrf_field(csrf) }}
+<label>Hinweis / Ablehnungsgrund<textarea name="reason" rows="5" maxlength="1000" placeholder="Bei Ablehnung mindestens 3 Zeichen.">{{ video.reason }}</textarea></label>
+<div class="sa-buttons"><button class="button" type="submit" name="state" value="approved">{{ icon('check',17) }} Freigeben</button><button class="button secondary" type="submit" name="state" value="pending">Zurück zur Prüfung</button><button class="button secondary danger" type="submit" name="state" value="rejected">Ablehnen</button></div></form>
+<div class="sa-danger-zone"><h3>Dauerhaft entfernen</h3><p class="muted small-copy">Löscht Video, zugehörige Likes und Kommentare. Diese Aktion kann hier nicht rückgängig gemacht werden.</p><form method="post" action="/admin/videos/{{ video.id }}/delete" data-confirm="Dieses Video und seine Kommentare dauerhaft löschen?">{{ csrf_field(csrf) }}<button class="button secondary danger" type="submit">{{ icon('trash',17) }} Video endgültig löschen</button></form></div>
+<a class="button secondary compact sa-gap" href="/admin">← Zur Übersicht</a>
+</section>
+</div>
+{% endblock %}

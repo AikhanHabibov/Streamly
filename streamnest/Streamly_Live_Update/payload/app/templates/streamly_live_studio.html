@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% from "components.html" import icon, csrf_field %}
+{% block title %}Livestream Studio{% endblock %}
+{% block content %}
+<div class="section-heading"><div><span class="eyebrow">STREAMLY CREATOR</span><h1 class="page-title">Dein Livestream-Studio.</h1><p class="muted">OBS sendet das Bild. Streamly bringt deine Community dazu.</p></div><a href="/live" class="button secondary">Live entdecken {{ icon('arrow',17) }}</a></div>
+{% if not media_available %}<div class="sl-notice">Der Streaming-Server ist nicht erreichbar. Starte die Anwendung mit der zusätzlichen Datei <code>compose.live.yaml</code>.</div>{% endif %}
+<div class="settings-layout">
+<section class="panel"><h2>Deine Sendung <span class="sl-status {{ 'online' if online else '' }}">{{ 'LIVE' if online else 'OFFLINE' }}</span></h2>
+<form action="/studio/live/settings" method="post" class="form-stack">{{ csrf_field(csrf) }}
+<label>Titel<input name="title" required minlength="3" maxlength="140" value="{{ live_channel.title if live_channel else ('Live mit ' ~ user.display_name) }}"></label>
+<label>Beschreibung<textarea name="description" rows="5" maxlength="5000" placeholder="Was passiert heute?">{{ live_channel.description if live_channel else '' }}</textarea></label>
+<label>Kategorie<select name="category">{% for c in categories %}<option {{ 'selected' if live_channel and live_channel.category==c else '' }}>{{ c }}</option>{% endfor %}</select></label>
+<button class="button" type="submit">Sendung speichern {{ icon('check',17) }}</button></form>
+{% if live_channel and live_channel.key_hash and live_channel.enabled %}<div class="sl-public-link"><a class="button secondary" href="/live/{{ user.username }}">Öffentliche Live-Seite {{ icon('arrow',17) }}</a></div>{% endif %}
+</section>
+<section class="panel"><h2>Mit OBS verbinden</h2><p class="muted small-copy">In OBS: Einstellungen → Stream → Dienst «Benutzerdefiniert». Wähle H.264 für Video, AAC für Audio und ein Keyframe-Intervall von 2 Sekunden.</p>
+<label class="sl-label">Server<input class="sl-copy-input" readonly value="{{ rtmp_url }}" aria-label="OBS Serveradresse"></label>
+{% if stream_key %}
+<div class="sl-secret"><strong>Dein neuer Stream-Schlüssel – nur jetzt sichtbar.</strong><p>Behandle ihn wie ein Passwort. Nicht in Screenshots oder öffentlich teilen.</p><label class="sl-label">Stream-Schlüssel<input class="sl-copy-input" readonly type="password" value="{{ stream_key }}" id="sl-stream-key" autocomplete="off"></label><button type="button" class="button secondary compact" data-sl-reveal>Anzeigen / ausblenden</button><button type="button" class="button secondary compact" data-sl-copy-key>Kopieren</button></div>
+{% else %}<p class="muted small-copy sl-gap">Der Schlüssel wird nach dem Erstellen einmalig angezeigt. Bei Verlust einen neuen erstellen.</p>{% endif %}
+<form method="post" action="/studio/live/key" class="sl-gap" data-confirm="Neuen Schlüssel erstellen? Ein bisheriger Schlüssel wird ungültig. Stoppe vorher deinen Stream in OBS.">{{ csrf_field(csrf) }}<button class="button secondary" type="submit">{{ icon('settings',17) }} {{ 'Neuen Schlüssel erstellen' if live_channel and live_channel.key_hash else 'Stream-Schlüssel erstellen' }}</button></form>
+{% if live_channel and live_channel.key_hash %}<form method="post" action="/studio/live/disable" class="sl-gap" data-confirm="Streaming deaktivieren und den Schlüssel sperren?">{{ csrf_field(csrf) }}<button class="button secondary danger" type="submit">Stream deaktivieren</button></form>{% endif %}
+<div class="sl-notice sl-gap">Die mitgelieferte OBS-Adresse funktioniert nur auf dem Computer, auf dem Docker läuft. Für entfernte Creator ist ein eigener abgesicherter RTMPS-Eingang oder ein SSH-Tunnel nötig. Öffne Port 1935 nicht unverschlüsselt im Internet.</div>
+</section>
+</div>
+<section class="creator-banner"><div><h3>So geht es live.</h3><p>Quelle in OBS wählen → Server und Schlüssel eintragen → «Streaming starten» → öffentliche Live-Seite öffnen. HLS hat eine Verzögerung; dies ist kein Echtzeit-Videochat.</p></div></section>
+<script defer src="/static/streamly_live.js"></script>
+{% endblock %}

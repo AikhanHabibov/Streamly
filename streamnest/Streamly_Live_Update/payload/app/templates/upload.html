@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% from "components.html" import icon, csrf_field %}
+{% block title %}Video hochladen{% endblock %}
+{% block content %}
+<div class="section-heading"><div><span class="eyebrow">STREAMLY UPLOADS</span><h1 class="page-title">Mehr Raum für deine Ideen.</h1><p class="muted">Grosse Videos in kleinen Teilen übertragen. Bei einer Unterbrechung einfach dieselbe Datei erneut wählen.</p></div><a href="/studio" class="button secondary">Creator Studio {{ icon('arrow',17) }}</a></div>
+<div class="editor-layout">
+<form class="panel form-stack" action="/upload" method="post" enctype="multipart/form-data" id="sl-chunk-form" data-max-size="{{ max_mb * 1024 * 1024 }}" data-user="{{ user.id }}">
+{{ csrf_field(csrf) }}
+<div class="dropzone" id="sl-dropzone"><div class="upload-cloud">{{ icon('upload',34) }}</div><h2>Auch grosse Geschichten passen hier rein.</h2><p>Datei hier ablegen oder vom Computer auswählen.</p><label class="button secondary file-label">Video auswählen<input type="file" name="video" required accept=".mp4,.webm,video/mp4,video/webm" id="sl-upload-file"></label><span class="file-info" id="sl-file-info">MP4 oder WebM · maximal {{ max_mb }} MiB pro Video</span></div>
+<label>Titel<input name="title" required minlength="3" maxlength="140" placeholder="Worum geht es in deinem Video?"></label>
+<label>Beschreibung<textarea name="description" rows="5" maxlength="5000" placeholder="Erzähle mehr über dein Video."></textarea></label>
+<label>Kategorie<select name="category" required>{% for c in categories %}<option>{{ c }}</option>{% endfor %}</select></label>
+<div class="upload-status" id="sl-upload-progress" hidden><progress max="100" value="0"></progress><span role="status" id="sl-upload-message">Bereit.</span></div>
+<div class="form-end"><span class="muted small-copy">{{ icon('eye',16) }} Das fertige Video ist öffentlich.</span><button type="submit" class="button">{{ icon('upload',17) }} Video veröffentlichen</button></div>
+<button type="button" class="button secondary compact" id="sl-discard-upload" hidden>Gespeicherten Upload verwerfen</button>
+<noscript><p>Für grosse, unterbrechbare Uploads ist JavaScript nötig. Ohne JavaScript wird der bisherige Direkt-Upload verwendet; dessen Proxy-Limits können niedriger sein.</p></noscript>
+</form>
+<aside class="upload-guide"><span class="eyebrow">GRÖSSER. NICHT KOMPLIZIERTER.</span><h2>8 MiB pro Schritt.<br>Bis 2 GiB pro Video.</h2><div class="guide-item"><span>01</span><div><h3>Unterbrechung? Kein Neustart.</h3><p>Im selben Browser wieder anmelden, dieselbe Datei auswählen und erneut veröffentlichen. Bereits vollständig gespeicherte Teile werden innerhalb von 24 Stunden wiederverwendet.</p></div></div><div class="guide-item"><span>02</span><div><h3>Dein Video wird geprüft.</h3><p>Nach der Übertragung entstehen Videocontainer und Vorschaubild im Hintergrund. Warte auf den Abschluss. Der Server muss dafür weiterlaufen.</p></div></div><div class="guide-item"><span>03</span><div><h3>Das Format bleibt wichtig.</h3><p>MP4 mit H.264/AAC oder WebM mit VP8/VP9/AV1. Das bestehende Limit von 4 Stunden und 4096 Pixeln bleibt bestehen. Keine automatische Umwandlung von HEVC/MOV.</p></div></div><div class="notice">{{ icon('info',20) }}<p>Standardmässig 20 GiB Kontospeicher. Upload und Verarbeitung benötigen zusätzlichen freien Server-Speicher. Fehlgeschlagene Videoverarbeitung kann nicht als laufender Job fortgesetzt werden.</p></div></aside>
+</div>
+{% endblock %}

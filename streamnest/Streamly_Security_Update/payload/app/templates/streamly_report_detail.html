@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% from "components.html" import csrf_field %}
+{% block title %}Meldung {{ report.id }}{% endblock %}
+{% block content %}
+{% include "streamly_admin_nav.html" %}
+<div class="section-heading"><div><span class="eyebrow">MELDUNG #{{ report.id }} · {{ report.status }}</span><h1 class="page-title">{{ report.target_title }}</h1><p class="muted small-copy">@{{ report.owner_name }} · {{ report.target_type }} · {{ report.created_at|ago }}</p></div><a href="/admin/reports" class="button secondary">Zur Übersicht</a></div>
+<div class="settings-layout">
+<section class="panel"><h2>{{ report.category }}</h2><h3>Beschreibung der meldenden Person</h3><p class="preserve-lines ss-snapshot">{{ report.reason }}</p><h3>Gespeicherter Inhaltsauszug</h3><p class="preserve-lines ss-snapshot">{{ report.snapshot or 'Kein Textauszug.' }}</p>
+{% if target_available %}
+{% if report.target_type=='video' %}<a href="/admin/videos/{{ report.target_id }}" class="button secondary">Video prüfen</a>
+{% elif report.target_type=='comment' %}<a href="/watch/{{ target_video }}#comments" class="button secondary">Kommentar im Kontext</a>
+{% else %}<a href="/live/{{ report.target_id }}" class="button secondary">Livestream ansehen</a>{% endif %}
+{% else %}<div class="ss-notice">Der ursprüngliche Inhalt ist nicht mehr verfügbar oder wurde ersetzt. Es wird kein neuer Inhalt mit einer wiederverwendeten ID gelöscht.</div>{% endif %}
+</section>
+<form class="panel form-stack" method="post" action="/admin/reports/{{ report.id }}/action" data-moderation-report>{{ csrf_field(csrf) }}
+<h2>Entscheidung dokumentieren</h2><label>Interne Admin-Notiz<textarea name="note" rows="6" maxlength="2000" placeholder="Prüfung und Massnahme begründen.">{{ report.admin_note }}</textarea></label>
+<p class="muted small-copy">Diese Notiz ist nicht in der Meldestatus-Seite des Nutzers sichtbar. Löschungen sind dauerhaft. Kontosperren entziehen zusätzlich die Streaming-Rechte.</p>
+<div class="ss-actions"><button class="button secondary" type="submit" name="action" value="reviewing">In Prüfung nehmen</button><button class="button secondary" type="submit" name="action" value="dismissed">Ohne Massnahme schliessen</button><button class="button" type="submit" name="action" value="resolved">Als bearbeitet markieren</button></div>
+{% if target_available %}<div class="ss-actions ss-destructive">{% if report.target_type=='video' %}<button class="button secondary danger" type="submit" name="action" value="remove_video">Video dauerhaft löschen</button>{% elif report.target_type=='comment' %}<button class="button secondary danger" type="submit" name="action" value="remove_comment">Kommentar löschen</button>{% else %}<button class="button secondary danger" type="submit" name="action" value="stop_live">Livestream sperren</button>{% endif %}</div>{% endif %}
+{% if owner_available %}<div class="ss-actions"><button class="button secondary danger" type="submit" name="action" value="block_account">Ursprüngliches Konto sperren</button></div>{% endif %}
+</form>
+</div>
+{% endblock %}

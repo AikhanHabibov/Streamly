@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% from "components.html" import icon, card, csrf_field %}
+{% block title %}{{ video.title }}{% endblock %}
+{% block content %}
+<div class="watch-layout">
+  <section class="watch-primary">
+    <div class="player-shell"><video id="video-player" controls playsinline preload="metadata" poster="/poster/{{ video.id }}" data-video-id="{{ video.id }}" src="/media/{{ video.id }}">Dein Browser unterstützt dieses Videoformat nicht. <a href="/media/{{ video.id }}">Videodatei öffnen</a></video></div>
+    <div class="watch-category"><a href="/?category={{ video.category|urlencode }}">{{ video.category }}</a><span>·</span><span>{{ video.created_at|ago }}</span></div>
+    <h1 class="watch-title">{{ video.title }}</h1>
+    <div class="watch-stats"><span>{{ icon('eye',17) }} <span id="view-count">{{ video.views|compact }}</span> Aufrufe</span><div class="watch-actions">
+      {% if user %}<form method="post" action="/watch/{{ video.id }}/like">{{ csrf_field(csrf) }}<button type="submit" class="button secondary {{ 'liked' if liked else '' }}" aria-pressed="{{ 'true' if liked else 'false' }}">{{ icon('heart',18) }} {{ video.likes|compact }}<span class="sr-only"> Likes</span></button></form>
+      {% else %}<a href="/login" class="button secondary">{{ icon('heart',18) }} {{ video.likes|compact }}<span class="sr-only"> Likes</span></a>{% endif %}
+      <button class="button secondary" type="button" data-share="{{ share_url }}">{{ icon('share',18) }} Teilen</button><a class="button secondary" href="/report/video/{{ video.id }}">Melden</a>
+    </div></div>
+    <div class="watch-creator">
+      <a class="avatar" href="/channel/{{ video.username }}">{{ video.display_name[:1]|upper }}</a><a href="/channel/{{ video.username }}" class="creator-copy"><strong>{{ video.display_name }}</strong><span>{{ subscriber_count|compact }} Abonnenten</span></a>
+      {% if user and user.id == video.user_id %}<a class="button secondary" href="/studio/{{ video.id }}/edit">Bearbeiten</a>
+      {% elif user %}<form method="post" action="/channel/{{ video.username }}/subscribe">{{ csrf_field(csrf) }}<input type="hidden" name="video_id" value="{{ video.id }}"><button type="submit" class="button {{ 'secondary' if subscribed else '' }}">{{ icon('check' if subscribed else 'sub',17) }} {{ 'Abonniert' if subscribed else 'Abonnieren' }}</button></form>
+      {% else %}<a class="button" href="/login">Abonnieren</a>{% endif %}
+    </div>
+    {% if video.description %}<details class="description-panel" open><summary>Über dieses Video</summary><p class="preserve-lines">{{ video.description }}</p></details>{% endif %}
+    <section class="comments-section" id="comments">
+      <h2>Kommentare <span class="muted">{{ comment_count }}</span></h2>
+      {% if user %}
+      <form class="comment-form" method="post" action="/watch/{{ video.id }}/comment">{{ csrf_field(csrf) }}<label class="sr-only" for="comment">Dein Kommentar</label><textarea id="comment" name="body" required minlength="1" maxlength="2000" rows="3" placeholder="Teile deine Gedanken mit der Community …"></textarea><button class="button compact" type="submit">Kommentieren {{ icon('arrow',16) }}</button></form>
+      {% else %}<div class="comment-login"><a href="/login">Melde dich an</a>, um mitzureden.</div>{% endif %}
+      {% for c in comments %}
+      <article class="comment"><a href="/channel/{{ c.username }}" class="avatar small">{{ c.display_name[:1]|upper }}</a><div class="comment-body"><div class="comment-top"><a href="/channel/{{ c.username }}"><strong>{{ c.display_name }}</strong></a><span>{{ c.created_at|ago }}</span>
+      {% if user and (user.id==c.user_id or user.id==video.user_id) %}<form method="post" action="/comments/{{ c.id }}/delete" data-confirm="Diesen Kommentar wirklich löschen?">{{ csrf_field(csrf) }}<button class="icon-button" type="submit" aria-label="Kommentar löschen">{{ icon('trash',15) }}</button></form>{% endif %}
+      </div><p class="preserve-lines">{{ c.body }}</p><a class="ss-report-link" href="/report/comment/{{ c.id }}">Kommentar melden</a></div></article>
+      {% else %}<p class="muted small-copy">Noch keine Kommentare. Starte die Unterhaltung.</p>{% endfor %}
+      {% if comment_count>100 %}<p class="muted small-copy">Die neuesten 100 Kommentare werden angezeigt.</p>{% endif %}
+    </section>
+  </section>
+  <aside class="watch-recommendations"><h2>Als Nächstes entdecken</h2><div class="recommendation-grid">{% for v in recommended %}{{ card(v) }}{% else %}<p class="muted">Bald findest du hier weitere Videos.</p>{% endfor %}</div></aside>
+</div>
+{% endblock %}

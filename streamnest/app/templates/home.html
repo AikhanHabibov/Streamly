@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% from "components.html" import icon, card, pagination %}
+{% block title %}{{ 'Abonnements' if is_feed else ('Suche: ' ~ q if q else 'Entdecken') }}{% endblock %}
+{% block content %}
+{% if not q and not active_category and not is_feed %}
+<div class="page-eyebrow">{{ icon('spark',15) }} EIN PLATZ FÜR DEINE INSPIRATION</div>
+<section class="hero">
+  <div class="hero-copy">
+    <span class="hero-kicker"><span class="live-dot"></span> Entdecken. Teilen. Zusammen wachsen.</span>
+    <h1>Grosse Ideen.<br><span>Deine Bühne.</span></h1>
+    <p>Entdecke neue Perspektiven und Menschen,<br class="desktop-only"> die deine Leidenschaft teilen.</p>
+    <div class="hero-buttons">
+      <a class="button" href="#videos">Videos entdecken {{ icon('arrow',18) }}</a>
+      <a class="hero-secondary" href="{{ '/upload' if user else '/register' }}">Selbst kreativ werden</a>
+    </div>
+  </div>
+  <div class="hero-art" aria-hidden="true">
+    <div class="art-grid"></div><div class="orbital orbit-one"></div><div class="orbital orbit-two"></div><div class="orbital orbit-three"></div>
+    <div class="art-halo"></div><div class="big-play">{{ icon('play',70) }}</div>
+    <div class="floating-tag tag-one">{{ icon('heart',17) }} Für echte Verbindungen</div>
+    <div class="floating-tag tag-two"><span class="tag-dot"></span> Create something great.</div>
+    <span class="art-plus plus-one">+</span><span class="art-plus plus-two">+</span>
+    <span class="art-number">01 / UNLIMITED POSSIBILITIES</span>
+  </div>
+</section>
+{% endif %}
+{% if q %}
+<div class="section-heading"><div><span class="eyebrow">FINDE DEINE INSPIRATION</span><h1 class="page-title">Ergebnisse für «{{ q }}»</h1></div></div>
+{% if creators %}<section class="creator-results" aria-label="Gefundene Kanäle">{% for c in creators %}
+<a href="/channel/{{ c.username }}" class="creator-result"><span class="avatar">{{ c.display_name[:1]|upper }}</span><span><strong>{{ c.display_name }}</strong><small>@{{ c.username }} · {{ c.subscribers|compact }} Abonnenten</small></span>{{ icon('arrow',16) }}</a>
+{% endfor %}</section>{% endif %}
+{% endif %}
+{% if is_feed %}<div class="section-heading"><div><span class="eyebrow">DEINE LIEBLINGS-CREATOR</span><h1 class="page-title">Deine Abonnements</h1><p class="muted">Neue Videos aus den Kanälen, denen du folgst.</p></div></div>{% endif %}
+{% if not is_feed %}
+<nav class="chips" aria-label="Videofilter">
+  <a href="/?q={{ q|urlencode }}&sort={{ sort }}" class="chip {{ 'selected' if not active_category else '' }}">Alle Videos</a>
+  {% for c in categories %}<a href="/?category={{ c|urlencode }}&q={{ q|urlencode }}&sort={{ sort }}" class="chip {{ 'selected' if active_category==c else '' }}">{{ c }}</a>{% endfor %}
+</nav>
+{% endif %}
+<section id="videos">
+  <div class="section-heading">
+    <div class="heading-inline"><h2>{{ 'Aus deinen Kanälen' if is_feed else (active_category if active_category else ('Videos' if q else 'Dein nächstes Lieblingsvideo')) }}</h2>{% if not q %}<span class="label-outline">{{ 'BELIEBT' if sort=='popular' else 'ENTDECKEN' }}</span>{% endif %}</div>
+    {% if not is_feed %}<form method="get" action="/" class="sort-form">
+      <input type="hidden" name="q" value="{{ q }}"><input type="hidden" name="category" value="{{ active_category }}">
+      <label class="sr-only" for="sort">Sortierung</label>
+      <select name="sort" id="sort" data-autosubmit><option value="new" {{ 'selected' if sort!='popular' else '' }}>Neueste zuerst</option><option value="popular" {{ 'selected' if sort=='popular' else '' }}>Meiste Aufrufe</option></select>
+      <button type="submit" class="no-js-sort">Sortieren</button>
+    </form>{% endif %}
+  </div>
+  {% if videos %}<div class="video-grid">{% for v in videos %}{{ card(v) }}{% endfor %}</div>
+  {% else %}<div class="empty-state"><span class="empty-icon">{{ icon('play',32) }}</span>
+    <h3>{{ 'Hier wird es bald spannend.' if not q else 'Noch kein Treffer.' }}</h3>
+    <p>{% if is_feed %}Abonniere Creator-Kanäle, um ihre Videos hier zu sehen.{% elif q or active_category %}Versuche einen anderen Suchbegriff oder eine andere Kategorie.{% else %}Der Anfang einer neuen Community. Teile das erste Video.{% endif %}</p>
+    <a class="button secondary" href="{{ '/' if (q or active_category or is_feed) else ('/upload' if user else '/register') }}">{{ 'Alle Videos entdecken' if (q or active_category or is_feed) else 'Erstes Video veröffentlichen' }} {{ icon('arrow',17) }}</a>
+  </div>{% endif %}
+  {{ pagination(page,more,paging) }}
+</section>
+{% if not q and not active_category and not is_feed %}
+<section class="creator-banner"><div class="banner-symbol">{{ icon('upload',26) }}</div><div><h3>Die nächste gute Geschichte ist vielleicht deine.</h3><p>Ein Kanal. Deine Ideen. Eine Community, die mit dir wächst.</p></div><a class="button secondary" href="{{ '/upload' if user else '/register' }}">Starte deinen Kanal {{ icon('arrow',17) }}</a></section>
+{% endif %}
+{% endblock %}

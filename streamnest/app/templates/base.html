@@ -1,0 +1,83 @@
+{% from "components.html" import icon, csrf_field %}
+<!doctype html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0d1016">
+  <meta name="description" content="Streamly – dein Platz für Videos, kreative Ideen und echte Community.">
+  <meta name="csrf-token" content="{{ csrf }}">
+  <title>{% block title %}Entdecken{% endblock %} · Streamly</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/app.js" defer></script>
+<link rel="stylesheet" href="/static/streamly_extension.css">
+<script defer src="/static/streamly_uploads.js"></script>
+<link rel="stylesheet" href="/static/streamly_admin.css">
+<link rel="stylesheet" href="/static/streamly_security.css">
+<script defer src="/static/streamly_security.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Zum Inhalt springen</a>
+<header class="topbar">
+  <div class="brand-wrap">
+    <button class="icon-button menu-button" type="button" data-menu aria-label="Menü öffnen" aria-expanded="false" aria-controls="sidebar">{{ icon('menu') }}</button>
+    <a class="brand" href="/" aria-label="Streamly Startseite"><span class="brand-symbol">{{ icon('play',22) }}</span>stream<span>ly</span><span class="brand-dot"></span></a>
+  </div>
+  <form class="search" role="search" action="/" method="get">
+    {{ icon('search',19) }}<input name="q" value="{{ q }}" maxlength="100" placeholder="Videos, Kanäle und Kategorien suchen" aria-label="Videos, Kanäle und Kategorien suchen">
+    <button type="submit" class="search-submit" aria-label="Suchen">{{ icon('arrow',18) }}</button>
+  </form>
+  <nav class="top-actions" aria-label="Benutzer">
+    {% if user %}
+      <a class="button secondary upload-top" href="/upload">{{ icon('upload',17) }}<span>Video hochladen</span></a>
+      <a class="avatar" href="/studio" title="Creator Studio">{{ user.display_name[:1]|upper }}</a>
+    {% else %}
+      <a class="login-link" href="/login">Anmelden</a>
+      <a class="button compact" href="/register">Loslegen {{ icon('arrow',16) }}</a>
+    {% endif %}
+  </nav>
+</header>
+<div class="menu-overlay" data-overlay hidden></div>
+<aside class="sidebar" id="sidebar">
+  <div class="nav-label">ENTDECKEN</div>
+  <nav class="side-nav" aria-label="Hauptnavigation">
+{% if user %}<a href="/reports/mine">{{ icon("comment") }}<span>Meine Meldungen</span></a>{% endif %}
+{% if request.cookies.get("sl_admin_session") %}<a href="/admin">{{ icon("settings") }}<span>Administration</span></a>{% endif %}
+    <a href="/live" class="sl-nav-link">{{ icon('play') }}<span>Jetzt live</span></a>
+    <a href="{{ '/studio/live' if user else '/login' }}">{{ icon('upload') }}<span>Livestream Studio</span></a>
+
+    <a href="/" class="{% if path=='/' %}active{% endif %}">{{ icon('home') }}<span>Für dich</span></a>
+    <a href="/?sort=popular">{{ icon('spark') }}<span>Beliebt</span><span class="tiny-label">HOT</span></a>
+    <a href="{{ '/subscriptions' if user else '/login' }}" class="{% if path=='/subscriptions' %}active{% endif %}">{{ icon('sub') }}<span>Abonnements</span></a>
+  </nav>
+  <div class="sidebar-divider"></div>
+  <div class="nav-label">DEIN BEREICH</div>
+  <nav class="side-nav" aria-label="Creator-Bereich">
+    <a href="{{ '/studio' if user else '/login' }}" class="{% if path=='/studio' %}active{% endif %}">{{ icon('chart') }}<span>Creator Studio</span></a>
+    {% if user %}<a href="/channel/{{ user.username }}">{{ icon('user') }}<span>Mein Kanal</span></a>{% endif %}
+    <a href="{{ '/settings' if user else '/login' }}" class="{% if path=='/settings' %}active{% endif %}">{{ icon('settings') }}<span>Einstellungen</span></a>
+  </nav>
+  <div class="sidebar-divider"></div>
+  <div class="nav-label">KATEGORIEN</div>
+  <nav class="side-nav categories-nav" aria-label="Kategorien">
+    {% for c in categories %}
+    <a href="/?category={{ c|urlencode }}" class="{% if active_category==c %}active{% endif %}"><span class="category-dot dot-{{ loop.index }}"></span><span>{{ c }}</span></a>
+    {% endfor %}
+  </nav>
+  <div class="sidebar-bottom">
+    {% if user %}
+    <form action="/logout" method="post">{{ csrf_field(csrf) }}<button class="text-button muted" type="submit">{{ icon('logout',17) }} Abmelden</button></form>
+    {% else %}
+    <div class="join-card"><span class="join-icon">{{ icon('spark',22) }}</span><strong>Deine Ideen.<br>Deine Community.</strong><p>Mach aus Zuschauern<br>deine ersten Fans.</p><a href="/register">Creator werden {{ icon('arrow',16) }}</a></div>
+    {% endif %}
+    <p class="sidebar-footer">STREAMLY<br><span>Made for your next idea.</span></p>
+  </div>
+</aside>
+<main id="main" class="main">
+{% block content %}{% endblock %}
+<footer class="page-footer"><span>© Streamly</span><span>Deine Bühne. Deine Geschichten.</span></footer>
+</main>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>

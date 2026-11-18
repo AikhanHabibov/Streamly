@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY,username TEXT UNIQUE,display_name TEXT,created_at INTEGER);
+CREATE TABLE IF NOT EXISTS sessions(token_hash TEXT PRIMARY KEY,csrf TEXT,user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,expires_at INTEGER);
+CREATE TABLE IF NOT EXISTS videos(id TEXT PRIMARY KEY,user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,title TEXT,description TEXT DEFAULT '',category TEXT,filename TEXT,poster TEXT DEFAULT '',created_at INTEGER);
+CREATE TABLE IF NOT EXISTS comments(id INTEGER PRIMARY KEY,user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,video_id TEXT REFERENCES videos(id) ON DELETE CASCADE,body TEXT,created_at INTEGER);
+CREATE TABLE IF NOT EXISTS likes(user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,video_id TEXT REFERENCES videos(id) ON DELETE CASCADE);
+CREATE TABLE IF NOT EXISTS streamly_admin_accounts(username TEXT PRIMARY KEY,password_hash TEXT,created_at INTEGER);
+CREATE TABLE IF NOT EXISTS streamly_admin_sessions(token_hash TEXT PRIMARY KEY,username TEXT REFERENCES streamly_admin_accounts(username) ON DELETE CASCADE,expires_at INTEGER);
+CREATE TABLE IF NOT EXISTS streamly_admin_audit(id INTEGER PRIMARY KEY,actor TEXT,action TEXT,target TEXT,details TEXT,created_at INTEGER);
+CREATE TABLE IF NOT EXISTS streamly_video_moderation(video_id TEXT PRIMARY KEY REFERENCES videos(id) ON DELETE CASCADE,state TEXT,reason TEXT DEFAULT '');
+CREATE TABLE IF NOT EXISTS streamly_user_safety(user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,blocked INTEGER DEFAULT 0,can_stream INTEGER DEFAULT 0,reason TEXT DEFAULT '',updated_at INTEGER);
+CREATE TABLE IF NOT EXISTS streamly_live_channels(user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,path TEXT UNIQUE,key_hash TEXT,title TEXT,description TEXT DEFAULT '',enabled INTEGER DEFAULT 1);
+CREATE TABLE IF NOT EXISTS rate_limits(key TEXT PRIMARY KEY,count INTEGER,expires_at INTEGER);

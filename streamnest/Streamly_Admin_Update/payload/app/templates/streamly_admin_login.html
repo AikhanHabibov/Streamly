@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% from "components.html" import icon, csrf_field %}
+{% block title %}Admin-Anmeldung{% endblock %}
+{% block content %}
+<section class="panel sa-login"><span class="eyebrow">STREAMLY VERWALTUNG</span><h1>Admin-Anmeldung</h1><p class="muted small-copy">Separates Administratorkonto. Ein normales Benutzerkonto erhält dadurch keine Admin-Rechte.</p>
+{% if error %}<p class="sa-error" role="alert">{{ error }}</p>{% endif %}
+<form method="post" action="/admin/login" class="form-stack">{{ csrf_field(csrf) }}
+<label>Benutzername<input value="admin" name="username" readonly autocomplete="username"></label>
+<label>Admin-Passwort<input type="password" name="password" required minlength="15" maxlength="128" autocomplete="current-password" autofocus></label>
+<button type="submit" class="button">Sicher anmelden {{ icon('arrow',17) }}</button></form>
+<p class="muted small-copy sa-gap">Noch kein Admin eingerichtet? Das Konto wird ausschliesslich im Docker-Terminal mit <code>python -m app.streamly_admin_setup</code> erstellt. Es gibt kein öffentliches Standardpasswort.</p>
+</section>
+{% endblock %}

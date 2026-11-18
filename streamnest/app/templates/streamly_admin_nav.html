@@ -1,0 +1,3 @@
+{% from "components.html" import csrf_field %}
+<div class="sa-admin-banner"><div><span class="eyebrow">STREAMLY ADMINISTRATION</span><strong>Prüfen. Entscheiden. Verantwortung übernehmen.</strong></div><form method="post" action="/admin/logout">{{ csrf_field(csrf) }}<button class="button secondary compact" type="submit">Admin abmelden</button></form></div>
+<nav class="sa-tabs" aria-label="Administration"><a href="/admin">Videos prüfen</a><a href="/admin/users">Benutzer verwalten</a><a href="/admin/audit">Änderungsprotokoll</a><a href="/">Zur Plattform ↗</a><a href="/admin/reports">Meldungen</a><a href="/admin/security">Zwei-Faktor-Schutz</a></nav>

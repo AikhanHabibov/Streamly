@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% from "components.html" import icon, csrf_field %}
+{% block title %}Videos moderieren{% endblock %}
+{% block content %}
+{% include "streamly_admin_nav.html" %}
+<div class="section-heading"><div><h1 class="page-title">Die Prüfwarteschlange.</h1><p class="muted small-copy">Neue und geänderte Videos sind bis zur Freigabe nur für ihren Creator und den Admin sichtbar.</p></div></div>
+<div class="stats-grid">
+{% for key,label in [('pending','Warten auf Prüfung'),('approved','Freigegeben'),('rejected','Abgelehnt')] %}<div class="stat-card"><span class="stat-label">{{ label }}</span><strong>{{ counts.get(key,0) }}</strong><a class="stat-note" href="/admin?state={{ key }}">Anzeigen →</a></div>{% endfor %}
+</div>
+<div class="sa-filter-row"><nav class="chips"><a class="chip {{ 'selected' if state=='pending' else '' }}" href="/admin?state=pending">Zu prüfen</a><a class="chip {{ 'selected' if state=='approved' else '' }}" href="/admin?state=approved">Freigegeben</a><a class="chip {{ 'selected' if state=='rejected' else '' }}" href="/admin?state=rejected">Abgelehnt</a><a class="chip {{ 'selected' if state=='all' else '' }}" href="/admin?state=all">Alle</a></nav><form method="get" action="/admin" class="sa-search"><input type="hidden" name="state" value="{{ state }}"><input name="q" value="{{ q }}" maxlength="100" placeholder="Titel oder Benutzername" aria-label="Admin-Videosuche"><button class="button secondary compact">Suchen</button></form></div>
+{% if videos %}
+<div class="table-scroll panel content-table"><table><thead><tr><th>Video</th><th>Creator</th><th>Status</th><th>Aktion</th></tr></thead><tbody>
+{% for v in videos %}<tr><td><a class="table-video" href="/admin/videos/{{ v.id }}"><img src="/poster/{{ v.id }}" width="112" height="63" alt="" loading="lazy"><span><strong>{{ v.title }}</strong><small>{{ v.created_at|ago }} · {{ v.category }}</small></span></a></td><td><a href="/channel/{{ v.username }}">@{{ v.username }}</a></td><td><span class="sa-status sa-{{ v.state }}">{{ {'pending':'Prüfung offen','approved':'Freigegeben','rejected':'Abgelehnt'}[v.state] }}</span></td><td><a class="button secondary compact" href="/admin/videos/{{ v.id }}">Prüfen / bearbeiten</a></td></tr>{% endfor %}
+</tbody></table></div>
+{% else %}<div class="empty-state">{{ icon('check',35) }}<h3>Hier ist gerade nichts zu prüfen.</h3><p>Neue Uploads erscheinen automatisch in dieser Liste.</p></div>{% endif %}
+{% if page>1 or more %}<nav class="pagination">{% if page>1 %}<a href="/admin?state={{ state }}&q={{ q|urlencode }}&page={{ page-1 }}">← Zurück</a>{% endif %}<span class="muted">Seite {{ page }}</span>{% if more %}<a href="/admin?state={{ state }}&q={{ q|urlencode }}&page={{ page+1 }}">Weiter →</a>{% endif %}</nav>{% endif %}
+{% endblock %}
