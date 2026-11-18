@@ -3,7 +3,7 @@ services:
     build: .
     environment:
       APP_ENV: production
-      PUBLIC_URL: https://angela-beans-cross-intersection.trycloudflare.com
+      PUBLIC_URL: https://streamly.prod.page
       DATA_DIR: /data
     ports:
       - "127.0.0.1:8000:8000"
